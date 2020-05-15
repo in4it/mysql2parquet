@@ -17,9 +17,9 @@ type QueryResult struct {
 }
 
 type GenericRow struct {
-	rowName string
-	rowType string
-	rowData []byte
+	RowName string
+	RowType string
+	RowData []byte
 }
 
 func New() *MySQL {
@@ -54,7 +54,13 @@ func (m *MySQL) Query(queryString string) {
 	if err != nil {
 		panic(err.Error())
 	}
-
+}
+func (m *MySQL) GetColumnInfo() ([]string, []string) {
+	columnTypes := []string{}
+	for _, v := range m.queryResult.columnTypes {
+		columnTypes = append(columnTypes, v.DatabaseTypeName())
+	}
+	return m.queryResult.columnNames, columnTypes
 }
 func (m *MySQL) GetRow() []GenericRow {
 	var ret []GenericRow
@@ -69,9 +75,9 @@ func (m *MySQL) GetRow() []GenericRow {
 		}
 		for k := range vals {
 			ret = append(ret, GenericRow{
-				rowName: m.queryResult.columnNames[k],
-				rowType: m.queryResult.columnTypes[k].DatabaseTypeName(),
-				rowData: *vals[k].(*sql.RawBytes),
+				RowName: m.queryResult.columnNames[k],
+				RowType: m.queryResult.columnTypes[k].DatabaseTypeName(),
+				RowData: *vals[k].(*sql.RawBytes),
 			})
 		}
 	}
