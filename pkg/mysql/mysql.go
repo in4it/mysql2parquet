@@ -62,13 +62,14 @@ func (m *MySQL) GetColumnInfo() ([]string, []string) {
 	}
 	return m.queryResult.columnNames, columnTypes
 }
-func (m *MySQL) GetRow() []GenericRow {
+func (m *MySQL) GetRow() ([]GenericRow, bool) {
 	var ret []GenericRow
 	vals := make([]interface{}, len(m.queryResult.columnNames))
-	for i, _ := range m.queryResult.columnNames {
+	for i := range m.queryResult.columnNames {
 		vals[i] = new(sql.RawBytes)
 	}
-	for m.queryResult.rows.Next() {
+	nextRow := m.queryResult.rows.Next()
+	if nextRow {
 		err := m.queryResult.rows.Scan(vals...)
 		if err != nil {
 			panic(err)
@@ -81,5 +82,5 @@ func (m *MySQL) GetRow() []GenericRow {
 			})
 		}
 	}
-	return ret
+	return ret, nextRow
 }

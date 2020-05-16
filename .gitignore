@@ -1,2 +1,4 @@
-mysql2parquet-*
-cmd/.DS_Store
+/mysql2parquet-*
+/parquetreader-*
+.DS_Store
+/*.parquet

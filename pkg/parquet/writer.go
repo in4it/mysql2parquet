@@ -2,19 +2,20 @@ package parquet
 
 import (
 	"github.com/xitongsys/parquet-go-source/local"
+	"github.com/xitongsys/parquet-go/parquet"
 	"github.com/xitongsys/parquet-go/source"
 	"github.com/xitongsys/parquet-go/writer"
 )
 
-type Parquet struct {
+type ParquetWriter struct {
 	fw source.ParquetFile
 	pw *writer.CSVWriter
 }
 
-func New() *Parquet {
-	return &Parquet{}
+func NewWriter() *ParquetWriter {
+	return &ParquetWriter{}
 }
-func (p *Parquet) Open(filename string, schema []string) error {
+func (p *ParquetWriter) Open(filename string, schema []string) error {
 	var err error
 	p.fw, err = local.NewLocalFileWriter(filename)
 	if err != nil {
@@ -24,9 +25,10 @@ func (p *Parquet) Open(filename string, schema []string) error {
 	if err != nil {
 		return err
 	}
+	p.pw.CompressionType = parquet.CompressionCodec_SNAPPY
 	return nil
 }
-func (p *Parquet) WriteLine(data []string) error {
+func (p *ParquetWriter) WriteLine(data []string) error {
 	rec := make([]*string, len(data))
 	for j := 0; j < len(data); j++ {
 		rec[j] = &data[j]
@@ -36,7 +38,7 @@ func (p *Parquet) WriteLine(data []string) error {
 	}
 	return nil
 }
-func (p *Parquet) Close() error {
+func (p *ParquetWriter) Close() error {
 	if err := p.pw.WriteStop(); err != nil {
 		return err
 	}
