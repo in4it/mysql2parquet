@@ -1,6 +1,8 @@
 package parquet
 
 import (
+	"strings"
+
 	"github.com/xitongsys/parquet-go-source/local"
 	"github.com/xitongsys/parquet-go/parquet"
 	"github.com/xitongsys/parquet-go/source"
@@ -15,7 +17,7 @@ type ParquetWriter struct {
 func NewWriter() *ParquetWriter {
 	return &ParquetWriter{}
 }
-func (p *ParquetWriter) Open(filename string, schema []string) error {
+func (p *ParquetWriter) Open(filename string, schema []string, compression string) error {
 	var err error
 	p.fw, err = local.NewLocalFileWriter(filename)
 	if err != nil {
@@ -25,7 +27,18 @@ func (p *ParquetWriter) Open(filename string, schema []string) error {
 	if err != nil {
 		return err
 	}
-	p.pw.CompressionType = parquet.CompressionCodec_SNAPPY
+	switch strings.ToLower(compression) {
+	case "snappy":
+		p.pw.CompressionType = parquet.CompressionCodec_SNAPPY
+	case "gzip":
+		p.pw.CompressionType = parquet.CompressionCodec_GZIP
+	case "lzo":
+		p.pw.CompressionType = parquet.CompressionCodec_LZO
+	case "lz4":
+		p.pw.CompressionType = parquet.CompressionCodec_LZ4
+	case "brotli":
+		p.pw.CompressionType = parquet.CompressionCodec_BROTLI
+	}
 	return nil
 }
 func (p *ParquetWriter) WriteLine(data []string) error {

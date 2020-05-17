@@ -11,10 +11,10 @@ func initDB() {
 	mysql := New()
 	mysql.Init(connString)
 	mysql.Query("DROP TABLE test")
-	mysql.Query("CREATE TABLE test (id INT PRIMARY KEY NOT NULL, description NVARCHAR(255), amount FLOAT)")
-	for i := 0; i < 100; i++ {
+	mysql.Query("CREATE TABLE test (id INT PRIMARY KEY NOT NULL, description NVARCHAR(255), amount FLOAT, orderdate DATE, ordertime DATETIME, ordertimestamp TIMESTAMP)")
+	for i := 0; i < 10; i++ {
 		f := float32(i) / 100
-		mysql.Query(fmt.Sprintf("INSERT INTO test (id, description, amount) VALUES (%d, 'desc-%d', %f)", i, i, f))
+		mysql.Query(fmt.Sprintf("INSERT INTO test (id, description, amount, orderdate, ordertime, ordertimestamp) VALUES (%d, 'desc-%d', %f, NOW(), NOW(), NOW())", i, i, f))
 	}
 	mysql.Close()
 }
