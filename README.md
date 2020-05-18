@@ -4,8 +4,12 @@ Converts the output of a MySQL query to parquet
 ## Usage mysql2parquet
 ```
 Usage of ./mysql2parquet:
+  -compression string
+        compression to apply (snappy/bzip/gzip) (default "none")
   -connectionString string
         MySQL connectionstring
+  -debug string
+        enable debug (default "no")
   -out string
         outputfile
   -query string
