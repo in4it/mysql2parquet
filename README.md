@@ -4,16 +4,18 @@ Converts the output of a MySQL query to parquet
 ## Usage mysql2parquet
 ```
 Usage of ./mysql2parquet:
+  -all
+    	migrate all tables in database
   -compression string
-        compression to apply (snappy/bzip/gzip) (default "none")
+    	compression to apply (snappy/bzip/gzip) (default "none")
   -connectionString string
-        MySQL connectionstring
-  -debug string
-        enable debug (default "no")
+    	MySQL connectionstring (requred)
+  -debug
+    	enable debug
   -out string
-        outputfile
+    	outputfile or output directory when used with '-all' (requred)
   -query string
-        query
+    	query
 ```
 
 ## Usage parquetreader
