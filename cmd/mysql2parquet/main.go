@@ -67,7 +67,7 @@ func mysqlToParquetAll(connectionString, compression string, debug bool) {
 			fmt.Printf("Error: %s \n", err)
 			os.Exit(2)
 		}
-
+		fmt.Printf("Processing table: %s", table)
 		mysqlToParquet(connectionString, fmt.Sprintf("SELECT * FROM %s", table), fmt.Sprintf("%s/%s.parquet", out, table), compression, debug)
 	}
 
