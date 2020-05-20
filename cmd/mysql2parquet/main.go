@@ -31,7 +31,7 @@ func main() {
 
 	flag.StringVar(&connectionString, "connectionString", "", "MySQL connectionstring (requred)")
 	flag.StringVar(&query, "query", "", "query")
-	flag.StringVar(&out, "out", "", "outputfile or output directory when used with '-all' (requred) ")
+	flag.StringVar(&out, "out", "", "outputfile or output directory when used with '-all' (requred)")
 	flag.StringVar(&compression, "compression", "none", "compression to apply (snappy/bzip/gzip)")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&all, "all", false, "migrate all tables in database")
