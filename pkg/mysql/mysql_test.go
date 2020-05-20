@@ -10,7 +10,7 @@ const connString = "root:secret@tcp(127.0.0.1:3306)/test"
 func initDB() {
 	mysql := New()
 	mysql.Init(connString)
-	mysql.Query("DROP TABLE test")
+	mysql.Query("DROP TABLE IF EXISTS test")
 	mysql.Query("CREATE TABLE test (id INT PRIMARY KEY NOT NULL, description NVARCHAR(255), amount FLOAT, orderdate DATE, ordertime DATETIME, ordertimestamp TIMESTAMP)")
 	for i := 0; i < 10; i++ {
 		f := float32(i) / 100

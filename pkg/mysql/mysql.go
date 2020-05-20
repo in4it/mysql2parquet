@@ -40,6 +40,16 @@ func (m *MySQL) RowClose() {
 	m.queryResult.rows.Close()
 }
 
+func (m *MySQL) GetTables() *sql.Rows {
+	var err error
+	m.queryResult.rows, err = m.db.Query("SHOW TABLES")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return m.queryResult.rows
+}
+
 func (m *MySQL) Query(queryString string) {
 	var err error
 	m.queryResult.rows, err = m.db.Query(queryString)

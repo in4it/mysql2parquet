@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -10,23 +11,69 @@ import (
 	"github.com/in4it/mysql2parquet/pkg/parquet"
 )
 
-func main() {
-	var (
-		connectionString string
-		query            string
-		out              string
-		compression      string
-		debug            string
-	)
+var usage = func() {
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	flag.PrintDefaults()
+	os.Exit(1)
+}
 
-	flag.StringVar(&connectionString, "connectionString", "", "MySQL connectionstring")
+var (
+	connectionString string
+	query            string
+	out              string
+	compression      string
+	debug            bool
+	db               string
+	all              bool
+)
+
+func main() {
+
+	flag.StringVar(&connectionString, "connectionString", "", "MySQL connectionstring (requred)")
 	flag.StringVar(&query, "query", "", "query")
-	flag.StringVar(&out, "out", "", "outputfile")
+	flag.StringVar(&out, "out", "", "outputfile or output directory when used with '-all' (requred) ")
 	flag.StringVar(&compression, "compression", "none", "compression to apply (snappy/bzip/gzip)")
-	flag.StringVar(&debug, "debug", "no", "enable debug")
+	flag.BoolVar(&debug, "debug", false, "enable debug")
+	flag.BoolVar(&all, "all", false, "migrate all tables in database")
 
 	flag.Parse()
 
+	if connectionString == "" {
+		fmt.Println("Flag 'connectionString' not set")
+		usage()
+	}
+
+	if out == "" {
+		fmt.Println("Flag 'out' not set")
+		usage()
+	}
+
+	if all {
+		mysqlToParquetAll(connectionString, compression, debug)
+	} else {
+		mysqlToParquet(connectionString, query, out, compression, debug)
+	}
+}
+
+func mysqlToParquetAll(connectionString, compression string, debug bool) {
+	var table string
+	m := mysql.New()
+	m.Init(connectionString)
+	res := m.GetTables()
+
+	for res.Next() {
+		res.Scan(&table)
+		if err := os.MkdirAll(out, 0755); err != nil {
+			fmt.Printf("Error: %s \n", err)
+			os.Exit(2)
+		}
+
+		mysqlToParquet(connectionString, fmt.Sprintf("SELECT * FROM %s", table), fmt.Sprintf("%s/%s.parquet", out, table), compression, debug)
+	}
+
+}
+
+func mysqlToParquet(connectionString, query, out, compression string, debug bool) {
 	// do mysql query
 	m := mysql.New()
 	m.Init(connectionString)
@@ -38,7 +85,7 @@ func main() {
 	p := parquet.NewWriter()
 	p.Open(out, schema, compression)
 
-	if debug == "true" {
+	if debug {
 		fmt.Printf("Schema: %+v", schema)
 	}
 
@@ -51,7 +98,7 @@ func main() {
 		for k, v := range row {
 			data[k] = toParquetValue(v.RowData, v.RowType)
 		}
-		if debug == "true" {
+		if debug {
 			fmt.Printf("Data: %+v\n", data)
 		}
 		p.WriteLine(data)
