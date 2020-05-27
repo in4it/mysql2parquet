@@ -57,7 +57,12 @@ func (p *ParquetReader) isConvertedType(convertedType *parquet.ConvertedType) (s
 
 func (p *ParquetReader) ReadColumn(columnName string) ([]interface{}, string, error) {
 	// determine schema
-	fullColumnName := "Parquet_go_root." + columnName
+	var fullColumnName string
+	if strings.ContainsRune(columnName, '.') {
+		fullColumnName = columnName
+	} else {
+		fullColumnName = "Parquet_go_root." + columnName
+	}
 	var (
 		index       int32
 		parquetType string

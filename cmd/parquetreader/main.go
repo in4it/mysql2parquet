@@ -36,15 +36,35 @@ func main() {
 			tm := time.Unix(*v.(*int64), 0)
 			fmt.Printf("%s\n", tm.Format("2006-01-02 15:04:05"))
 		case "FLOAT":
-			fmt.Printf("%f\n", *v.(*float32))
+			if reflect.TypeOf(v).String() == "*float32" {
+				fmt.Printf("%f\n", *v.(*float32))
+			} else {
+				fmt.Printf("%f\n", v.(float32))
+			}
 		case "DOUBLE":
-			fmt.Printf("%f\n", *v.(*float64))
+			if reflect.TypeOf(v).String() == "*float64" {
+				fmt.Printf("%f\n", *v.(*float64))
+			} else {
+				fmt.Printf("%f\n", v.(float64))
+			}
 		case "INT32":
-			fmt.Printf("%d\n", *v.(*int32))
+			if reflect.TypeOf(v).String() == "*int32" {
+				fmt.Printf("%d\n", *v.(*int32))
+			} else {
+				fmt.Printf("%d\n", v.(int32))
+			}
 		case "INT64":
-			fmt.Printf("%d\n", *v.(*int64))
+			if reflect.TypeOf(v).String() == "*int64" {
+				fmt.Printf("%d\n", *v.(*int64))
+			} else {
+				fmt.Printf("%d\n", v.(int64))
+			}
 		case "BYTE_ARRAY":
-			fmt.Printf("%s\n", *v.(*string))
+			if reflect.TypeOf(v).String() == "*string" {
+				fmt.Printf("%s\n", *v.(*string))
+			} else {
+				fmt.Printf("%s\n", v.(string))
+			}
 		default:
 			fmt.Printf("Type not recognized: %s - %s\n", parquetType, reflect.TypeOf(v).String())
 		}
